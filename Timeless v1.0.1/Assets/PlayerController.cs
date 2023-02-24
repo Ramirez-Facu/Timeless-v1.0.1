@@ -4,32 +4,76 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
     public float jumpForce = 10f;
-    public LayerMask groundLayers;
+    public float crouchScale = 0.5f;
+    public float normalScale = 1f;
+    public float crouchDuration = 0.5f;
+    public float moveSpeed = 5f;
 
-    Rigidbody rb;
-    bool isGrounded = false;
+    public Sprite jumpingSprite;
+    private SpriteRenderer spriteRender;
+
+    private bool isJumping = false;
+    private bool isCrouching = false;
+    private float crouchTimer = 0f;
+
+    private Rigidbody2D rb;
+    private Vector3 normalColliderSize;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody2D>();
+        normalColliderSize = GetComponent<BoxCollider2D>().size;
     }
 
     void Update()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        Vector3 movement = new Vector3(moveX, 0f, 0f);
-        transform.position += movement * Time.deltaTime * moveSpeed;
+        // Movement to the sides
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // Jumping
+        if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
         {
-            rb.AddForce(new Vector3(0f, jumpForce, 0f), ForceMode.Impulse);
+            isJumping = true;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            spriteRender = GetComponent<SpriteRenderer>();
+            spriteRender.sprite = jumpingSprite;
+
+        }
+
+        // Crouching
+        if (Input.GetKeyDown(KeyCode.LeftControl) && !isJumping && !isCrouching)
+        {
+            isCrouching = true;
+            GetComponent<BoxCollider2D>().size = new Vector2(GetComponent<BoxCollider2D>().size.x, normalColliderSize.y * crouchScale);
+            StartCoroutine(CrouchTimer());
+        }
+
+        if (isCrouching)
+        {
+            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
+
+        if (isJumping || isCrouching)
+        {
+            GetComponent<BoxCollider2D>().enabled = true;
+        }
+        else
+        {
+            GetComponent<BoxCollider2D>().enabled = true;
         }
     }
 
-    void FixedUpdate()
+    IEnumerator CrouchTimer()
     {
-        isGrounded = Physics.CheckSphere(transform.position, 0.1f, groundLayers, QueryTriggerInteraction.Ignore);
+        yield return new WaitForSeconds(crouchDuration);
+        isCrouching = false;
+        GetComponent<BoxCollider2D>().size = normalColliderSize;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        isJumping = false;
     }
 }
