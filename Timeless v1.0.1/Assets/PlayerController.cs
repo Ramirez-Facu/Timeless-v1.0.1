@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+    private Animator anim;
+
     public float jumpForce = 10f;
     public float crouchScale = 0.5f;
     public float normalScale = 1f;
@@ -32,6 +35,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         normalColliderSize = GetComponent<BoxCollider2D>().size;
         spriteRender = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     void Update()
@@ -39,6 +43,16 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             powerupActive = !powerupActive;
+            print(powerupActive);
+            if (powerupActive)
+            {
+                anim.SetBool("PowerUp", true);
+            }
+            else 
+            { 
+                anim.SetBool("PowerUp", false);
+            }
+          
         }
         if (!powerupActive)
         {
@@ -46,6 +60,8 @@ public class PlayerController : MonoBehaviour
             float horizontalInput = Input.GetAxisRaw("Horizontal");
             if (horizontalInput != 0)
             {
+
+                anim.SetBool("running", true);
                 transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
                 if (horizontalInput > 0)
                 {
@@ -61,6 +77,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                anim.SetBool("running", false);
                 if (!isJumping)
                 {
                     spriteRender.sprite = idleSprite;
@@ -110,6 +127,7 @@ public class PlayerController : MonoBehaviour
             float horizontalInput = Input.GetAxisRaw("Horizontal");
             if (horizontalInput != 0)
             {
+                anim.SetBool("running", true);
                 transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
                 if (horizontalInput > 0)
                 {
@@ -125,6 +143,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                anim.SetBool("running", false);
                 if (!isJumping)
                 {
                     spriteRender.sprite = PowerupIdleSprite;
