@@ -10,13 +10,14 @@ public class PlayerController : MonoBehaviour
     public float crouchDuration = 0.5f;
     public float moveSpeed = 5f;
 
-    public Sprite jumpingSprite;
+    public Sprite jumpingSprite; 
+    public Sprite PowerupjumpingSprite;
     public Sprite idleSprite;
     public Sprite RunnigSprite;
-    public Sprite leftSprite;
-    public Sprite rightSprite;
-
-
+    public Sprite PowerupRunnigSprite;
+    public Sprite PowerupIdleSprite;
+    private bool powerupActive = false;
+  
     private SpriteRenderer spriteRender;
 
     private bool isJumping = false;
@@ -35,59 +36,137 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
-    // Movement to the sides
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        if (horizontalInput != 0)
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
-            if (horizontalInput > 0)
+            powerupActive = !powerupActive;
+        }
+        if (!powerupActive)
+        {
+            // Movement to the sides
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+            if (horizontalInput != 0)
             {
-                spriteRender.flipX = false;
-                spriteRender.sprite = RunnigSprite;
+                transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
+                if (horizontalInput > 0)
+                {
+                    spriteRender.flipX = false;
+                    spriteRender.sprite = RunnigSprite;
+                }
+                else
+                {
+                    spriteRender.flipX = true;
+                    spriteRender.sprite = RunnigSprite;
+                }
+
             }
-            else 
-            {  
-                spriteRender.flipX = true;
-                spriteRender.sprite = RunnigSprite;
+            else
+            {
+                if (!isJumping)
+                {
+                    spriteRender.sprite = idleSprite;
+                }
+                else 
+                {
+                    spriteRender.sprite = jumpingSprite;
+                }
+                
             }
-            
-        }
-        else
-        {
-            spriteRender.sprite = idleSprite;
-        }
 
-        // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
-        {
-            isJumping = true;
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            spriteRender = GetComponent<SpriteRenderer>();
-            spriteRender.sprite = jumpingSprite;
+            // Jumping
+            if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
+            {
+                isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                spriteRender = GetComponent<SpriteRenderer>();
+                spriteRender.sprite = jumpingSprite;
 
-        }
+            }
 
-        // Crouching
-        if (Input.GetKeyDown(KeyCode.LeftControl) && !isJumping && !isCrouching)
-        {
-            isCrouching = true;
-            GetComponent<BoxCollider2D>().size = new Vector2(GetComponent<BoxCollider2D>().size.x, normalColliderSize.y * crouchScale);
-            StartCoroutine(CrouchTimer());
-        }
+            // Crouching
+            if (Input.GetKeyDown(KeyCode.LeftControl) && !isJumping && !isCrouching)
+            {
+                isCrouching = true;
+                GetComponent<BoxCollider2D>().size = new Vector2(GetComponent<BoxCollider2D>().size.x, normalColliderSize.y * crouchScale);
+                StartCoroutine(CrouchTimer());
+            }
 
-        if (isCrouching)
-        {
-            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-        }
+            if (isCrouching)
+            {
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
 
-        if (isJumping || isCrouching)
-        {
-            GetComponent<BoxCollider2D>().enabled = true;
+            if (isJumping || isCrouching)
+            {
+                GetComponent<BoxCollider2D>().enabled = true;
+            }
+            else
+            {
+                GetComponent<BoxCollider2D>().enabled = true;
+            }
         }
-        else
+        else 
         {
-            GetComponent<BoxCollider2D>().enabled = true;
+            // Movement to the sides
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+            if (horizontalInput != 0)
+            {
+                transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
+                if (horizontalInput > 0)
+                {
+                    spriteRender.flipX = false;
+                    spriteRender.sprite = PowerupRunnigSprite;
+                }
+                else
+                {
+                    spriteRender.flipX = true;
+                    spriteRender.sprite = PowerupRunnigSprite;
+                }
+
+            }
+            else
+            {
+                if (!isJumping)
+                {
+                    spriteRender.sprite = PowerupIdleSprite;
+                }
+                else
+                {
+                    spriteRender.sprite = PowerupjumpingSprite;
+                }
+                
+            }
+
+            // Jumping
+            if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
+            {
+                isJumping = true;
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                spriteRender = GetComponent<SpriteRenderer>();
+                spriteRender.sprite = PowerupjumpingSprite;
+
+            }
+
+            // Crouching
+            if (Input.GetKeyDown(KeyCode.LeftControl) && !isJumping && !isCrouching)
+            {
+                isCrouching = true;
+                GetComponent<BoxCollider2D>().size = new Vector2(GetComponent<BoxCollider2D>().size.x, normalColliderSize.y * crouchScale);
+                StartCoroutine(CrouchTimer());
+            }
+
+            if (isCrouching)
+            {
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
+
+            if (isJumping || isCrouching)
+            {
+                GetComponent<BoxCollider2D>().enabled = true;
+            }
+            else
+            {
+                GetComponent<BoxCollider2D>().enabled = true;
+            }
         }
     }
 
