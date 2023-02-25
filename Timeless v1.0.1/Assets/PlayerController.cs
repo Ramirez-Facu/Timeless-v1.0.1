@@ -11,6 +11,12 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
 
     public Sprite jumpingSprite;
+    public Sprite idleSprite;
+    public Sprite RunnigSprite;
+    public Sprite leftSprite;
+    public Sprite rightSprite;
+
+
     private SpriteRenderer spriteRender;
 
     private bool isJumping = false;
@@ -24,13 +30,33 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         normalColliderSize = GetComponent<BoxCollider2D>().size;
+        spriteRender = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
-        // Movement to the sides
+
+    // Movement to the sides
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        if (horizontalInput != 0)
+        {
+            transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0f, 0f);
+            if (horizontalInput > 0)
+            {
+                spriteRender.flipX = false;
+                spriteRender.sprite = RunnigSprite;
+            }
+            else 
+            {  
+                spriteRender.flipX = true;
+                spriteRender.sprite = RunnigSprite;
+            }
+            
+        }
+        else
+        {
+            spriteRender.sprite = idleSprite;
+        }
 
         // Jumping
         if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
