@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 
     private Animator anim;
 
-    public float jumpForce = 10f;
+    public float jumpForce = 2f;
     public float crouchScale = 0.5f;
     public float normalScale = 1f;
     public float crouchDuration = 0.5f;
@@ -23,12 +23,14 @@ public class PlayerController : MonoBehaviour
   
     private SpriteRenderer spriteRender;
 
+
     private bool isJumping = false;
     private bool isCrouching = false;
     private float crouchTimer = 0f;
 
     private Rigidbody2D rb;
     private Vector3 normalColliderSize;
+
 
     void Start()
     {
@@ -48,12 +50,25 @@ public class PlayerController : MonoBehaviour
             {
                 anim.SetBool("PowerUp", true);
             }
-            else 
-            { 
+            else
+            {
                 anim.SetBool("PowerUp", false);
             }
-          
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            powerupActive = !powerupActive;
+            print(powerupActive);
+            if (powerupActive)
+            {
+                anim.SetBool("PowerUp", true);
+            }
+            else
+            {
+                anim.SetBool("PowerUp", false);
+            }
+
+            }
         if (!powerupActive)
         {
             // Movement to the sides
@@ -123,6 +138,9 @@ public class PlayerController : MonoBehaviour
         }
         else 
         {
+            // Set the mass of the Rigidbody
+            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+
             // Movement to the sides
             float horizontalInput = Input.GetAxisRaw("Horizontal");
             if (horizontalInput != 0)
