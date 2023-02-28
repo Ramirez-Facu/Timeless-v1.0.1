@@ -14,7 +14,6 @@ public class PlayerAttack : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Console.WriteLine("tuviaaaaaaeja");
            print("tuvieja");
         }
        

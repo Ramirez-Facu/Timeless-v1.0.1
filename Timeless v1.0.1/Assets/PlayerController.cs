@@ -138,8 +138,6 @@ public class PlayerController : MonoBehaviour
         }
         else 
         {
-            // Set the mass of the Rigidbody
-            rb.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
 
             // Movement to the sides
             float horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -177,7 +175,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
             {
                 isJumping = true;
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce*1.4f);
                 spriteRender = GetComponent<SpriteRenderer>();
                 spriteRender.sprite = PowerupjumpingSprite;
 
@@ -217,5 +215,9 @@ public class PlayerController : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         isJumping = false;
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Time.timeScale = 0;
+        }
     }
 }
