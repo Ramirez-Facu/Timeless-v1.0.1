@@ -13,10 +13,10 @@ public class EnemyCollition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        void OnCollisionEnter2D(Collision2D collision)
-        {
-         Application.Quit();
-        }
+    //    void OnCollisionEnter2D(Collision2D collision)
+    //    {
+    //     Application.Quit();
+    //    }
     }
 }
 
