@@ -7,11 +7,38 @@ public class PlayerController : MonoBehaviour
 
     private Animator anim;
 
+
+
+    //************************ Movement variables  ************************
+
+    private Rigidbody2D rb;
+    private Vector2 movement;
+    private float dashTimer;
+    private float dashCooldownTimer;
+    private Vector3 normalColliderSize;
+
+
     public float jumpForce = 2f;
     public float crouchScale = 0.5f;
     public float normalScale = 1f;
     public float crouchDuration = 0.5f;
     public float moveSpeed = 5f;
+    public float dashDistance = 20f;
+    public float dashDuration = 0.2f;
+    public float dashCooldown = 1f;
+
+
+    //*********************************************************************
+
+    //************************ Boolean Variables **************************
+    private bool powerupActive = false;
+    private bool isDashing;
+    private bool isJumping = false;
+    private bool isCrouching = false;
+    //*********************************************************************
+
+
+    //************************ SPRITES ************************************
 
     public Sprite jumpingSprite; 
     public Sprite PowerupjumpingSprite;
@@ -19,17 +46,12 @@ public class PlayerController : MonoBehaviour
     public Sprite RunnigSprite;
     public Sprite PowerupRunnigSprite;
     public Sprite PowerupIdleSprite;
-    private bool powerupActive = false;
-  
     private SpriteRenderer spriteRender;
+    //*********************************************************************
 
 
-    private bool isJumping = false;
-    private bool isCrouching = false;
     private float crouchTimer = 0f;
 
-    private Rigidbody2D rb;
-    private Vector3 normalColliderSize;
 
 
     void Start()
@@ -104,6 +126,37 @@ public class PlayerController : MonoBehaviour
                 
             }
 
+            ////dashing
+
+            if (Input.GetKeyDown(KeyCode.C) && dashCooldownTimer <= 0)
+            {
+                Dash();
+            }
+
+            // Check if dash is still in progress
+            if (isDashing)
+            {
+                // Subtract from dash timer
+                dashTimer -= Time.deltaTime;
+
+                // Check if dash is over
+                if (dashTimer <= 0)
+                {
+                    // End dash
+                    isDashing = false;
+                    rb.velocity = Vector2.zero;
+                    dashCooldownTimer = dashCooldown;
+                }
+            }
+            else
+            {
+                // Start cooldown timer
+                if (dashCooldownTimer > 0)
+                {
+                    dashCooldownTimer -= Time.deltaTime;
+                }
+            }
+
             // Jumping
             if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isCrouching)
             {
@@ -115,7 +168,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // Crouching
-            if (Input.GetKeyDown(KeyCode.LeftControl) && !isJumping && !isCrouching)
+            if (Input.GetKeyDown(KeyCode.X) && !isJumping && !isCrouching)
             {
                 isCrouching = true;
                 GetComponent<BoxCollider2D>().size = new Vector2(GetComponent<BoxCollider2D>().size.x, normalColliderSize.y * crouchScale);
@@ -219,5 +272,18 @@ public class PlayerController : MonoBehaviour
         {
             Time.timeScale = 0;
         }
+    }
+
+    void Dash()
+    {
+        // Get movement direction
+        movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+
+        // Set dash timer and flag
+        dashTimer = dashDuration;
+        isDashing = true;
+
+        // Set velocity to dash distance in movement direction
+        rb.velocity = movement * dashDistance;
     }
 }
